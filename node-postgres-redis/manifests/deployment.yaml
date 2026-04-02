@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-postgres-redis
+  labels:
+    app.kubernetes.io/name: node-postgres-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: node-postgres-redis
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: node-postgres-redis
+    spec:
+      containers:
+        - name: app
+          image: REPLACE_ME_IMAGE
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: node-postgres-redis-secrets
+                  key: DATABASE_URL
+                  optional: true
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: node-postgres-redis-secrets
+                  key: REDIS_URL
+                  optional: true
+            - name: S3_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: node-postgres-redis-secrets
+                  key: S3_BUCKET
+                  optional: true
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
