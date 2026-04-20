@@ -19,6 +19,29 @@ const pool = new pg.Pool({
 redis.on("error", () => {});
 pool.on("error", () => {});
 
+// Structured logging middleware
+app.use((req, res, next) => {
+  const startTime = Date.now();
+
+  res.on("finish", () => {
+    const duration = Date.now() - startTime;
+    const logEntry = {
+      time: new Date().toISOString(),
+      method: req.method,
+      uri: req.originalUrl || req.url,
+      status: res.statusCode,
+      latency_ms: duration,
+      remote_ip: req.ip || req.connection.remoteAddress,
+      user_agent: req.get("user-agent") || "",
+      host: req.get("host") || "",
+      message: `${req.method} ${req.originalUrl || req.url} - ${res.statusCode} (${duration}ms)`
+    };
+    console.log(JSON.stringify(logEntry));
+  });
+
+  next();
+});
+
 app.get("/health", (_req, res) => {
   res.json({
     ok: true,
