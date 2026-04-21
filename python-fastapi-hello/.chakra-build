@@ -1,0 +1,5 @@
+# Marker file to trigger Brain build
+# Created: 2026-04-21
+# Purpose: Initiate Docker image build for python-fastapi-hello sample app
+version: 1
+ready: true
