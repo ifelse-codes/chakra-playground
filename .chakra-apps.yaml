@@ -1,0 +1,19 @@
+# Chakra Playground - Apps Ready for Deployment
+# This file signals to Brain which sample applications are ready to build and deploy
+
+apps:
+  - name: python-fastapi-hello
+    path: ./python-fastapi-hello
+    language: python
+    framework: fastapi
+    port: 3000
+    health_endpoint: /health
+    description: "Python FastAPI sample application"
+
+  - name: demo-node-api
+    path: ./demo-node-api
+    language: nodejs
+    framework: express
+    port: 3000
+    health_endpoint: /health
+    description: "Node.js Express sample application"
